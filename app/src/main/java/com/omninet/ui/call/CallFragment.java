@@ -133,7 +133,80 @@ public class CallFragment extends Fragment {
         // Hoparlör
         Button btnSpeaker = buildCircleBtn("🔈", 0xFF21262D);
         btnSpeaker.setOnClickListener(v -> {
-            // Buradaki kodların...
-        }); // Dinleyiciyi kapat
-    } // Metodu kapat
-} // Class'ı kapat
+            speaker = !speaker;
+            btnSpeaker.setText(speaker ? "🔊" : "🔈");
+            AudioManager am = (AudioManager)
+                requireContext().getSystemService(android.content.Context.AUDIO_SERVICE);
+            am.setSpeakerphoneOn(speaker);
+        });
+
+        // Kapat
+        Button btnEnd = buildCircleBtn("📵", 0xFFDA3633);
+        btnEnd.setOnClickListener(v -> {
+            callActive = false;
+            handler.removeCallbacksAndMessages(null);
+            requireActivity().getSupportFragmentManager().popBackStack();
+        });
+
+        LinearLayout.LayoutParams btnP =
+            new LinearLayout.LayoutParams(160, 160);
+        btnP.setMargins(20, 0, 20, 0);
+
+        btnMute.setLayoutParams(btnP);
+        btnSpeaker.setLayoutParams(new LinearLayout.LayoutParams(160, 160) {{
+            setMargins(20, 0, 20, 0);
+        }});
+        btnEnd.setLayoutParams(new LinearLayout.LayoutParams(160, 160) {{
+            setMargins(20, 0, 20, 0);
+        }});
+
+        controls.addView(btnMute);
+        controls.addView(btnSpeaker);
+        controls.addView(btnEnd);
+        root.addView(controls);
+
+        // 1.5 saniye sonra "bağlandı" göster
+        handler.postDelayed(() -> {
+            tvStatus.setText("Bağlandı · Mesh VoIP");
+            tvStatus.setTextColor(0xFF2EA043);
+            callActive = true;
+            callStartTime = System.currentTimeMillis();
+            startTimer();
+        }, 1500);
+
+        return root;
+    }
+
+    private Button buildCircleBtn(String emoji, int bgColor) {
+        Button btn = new Button(getContext());
+        btn.setText(emoji);
+        btn.setTextSize(22);
+        android.graphics.drawable.GradientDrawable bg =
+            new android.graphics.drawable.GradientDrawable();
+        bg.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+        bg.setColor(bgColor);
+        btn.setBackground(bg);
+        return btn;
+    }
+
+    private void startTimer() {
+        handler.post(new Runnable() {
+            @Override public void run() {
+                if (!callActive) return;
+                long elapsed = (System.currentTimeMillis() - callStartTime) / 1000;
+                long min = elapsed / 60, sec = elapsed % 60;
+                if (tvDuration != null) {
+                    tvDuration.setText(String.format("%02d:%02d", min, sec));
+                }
+                handler.postDelayed(this, 1000);
+            }
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        callActive = false;
+        handler.removeCallbacksAndMessages(null);
+        super.onDestroyView();
+    }
+}
