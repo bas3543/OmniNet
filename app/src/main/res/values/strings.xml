@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OmniNet</string>
+    <string name="tab_chats">Sohbet</string>
+    <string name="tab_feed">Feed</string>
+    <string name="tab_radar">Radar</string>
+    <string name="tab_browser">Tarayıcı</string>
+    <string name="tab_wallet">Cüzdan</string>
+    <string name="tab_settings">Ayarlar</string>
+    <string name="status_connected">Bağlı — %d düğüm</string>
+    <string name="status_searching">Ağ aranıyor…</string>
+    <string name="msg_hint">Şifreli mesaj yaz…</string>
+    <string name="mesh_hops">%d atlama</string>
+    <string name="internet_via_mesh">İnternet: Mesh üzerinden</string>
+    <string name="internet_direct">İnternet: Direkt</string>
+    <string name="offline_mode">Çevrimdışı mod</string>
+    <string name="encryption_active">AES-256 şifreleme aktif</string>
+    <string name="mining_active">Mining Aktif</string>
+    <string name="gateway_active">Gateway aktif</string>
+</resources>
