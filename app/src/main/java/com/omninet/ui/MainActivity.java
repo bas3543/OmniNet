@@ -105,4 +105,64 @@ public class MainActivity extends AppCompatActivity {
             .commit();
     }
 
-    private void showPlu
+    private void showPlusMenu() {
+        String[] items = {
+            "📡  Feed (Mesh Sosyal)",
+            "🎯  Radar (Ağ Haritası)",
+            "🌐  Tarayıcı",
+            "📞  Sesli Görüşme",
+            "📹  Görüntülü Görüşme",
+            "📁  Dosya Gönder",
+            "🔑  NFC Kimlik Doğrula",
+            "📊  Ağ İstatistikleri"
+        };
+
+        new android.app.AlertDialog.Builder(this)
+            .setTitle("OmniNet Özellikler")
+            .setItems(items, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        openFragment(new FeedFragment());
+                        break;
+                    case 1:
+                        openFragment(new RadarFragment());
+                        break;
+                    case 2:
+                        openFragment(new BrowserFragment());
+                        break;
+                    case 3:
+                        openFragment(CallFragment.newInstance(
+                            "Kerem", "VOICE"));
+                        break;
+                    case 4:
+                        openFragment(CallFragment.newInstance(
+                            "Kerem", "VIDEO"));
+                        break;
+                    default:
+                        android.widget.Toast.makeText(this,
+                            items[which] + " yakında!",
+                            android.widget.Toast.LENGTH_SHORT).show();
+                }
+            })
+            .show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        handler.post(updateRunner);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        handler.removeCallbacks(updateRunner);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (economyBound) unbindService(economyConn);
+        try { unregisterReceiver(meshReceiver); } catch (Exception ignored) {}
+    }
+}
