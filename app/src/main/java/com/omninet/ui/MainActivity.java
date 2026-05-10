@@ -15,6 +15,7 @@ import com.omninet.ui.feed.FeedFragment;
 import com.omninet.ui.radar.RadarFragment;
 import com.omninet.ui.browser.BrowserFragment;
 import com.omninet.ui.call.CallFragment;
+import com.omninet.ui.file.FileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -137,6 +138,9 @@ public class MainActivity extends AppCompatActivity {
                     case 4:
                         openFragment(CallFragment.newInstance(
                             "Kerem", "VIDEO"));
+                        break;
+                   case 5:
+                        openFragment(new FileFragment());
                         break;
                     default:
                         android.widget.Toast.makeText(this,
