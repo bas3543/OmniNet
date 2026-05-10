@@ -126,4 +126,4 @@ public class FileFragment extends Fragment {
         LinearLayout progressCard = new LinearLayout(getContext());
         progressCard.setOrientation(LinearLayout.VERTICAL);
         progressCard.setPadding(32, 28, 32, 28);
-        android
+        }
