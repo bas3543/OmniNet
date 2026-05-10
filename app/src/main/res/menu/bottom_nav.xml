@@ -4,31 +4,16 @@
     <item
         android:id="@+id/nav_chats"
         android:icon="@android:drawable/ic_menu_send"
-        android:title="@string/tab_chats"/>
-
-    <item
-        android:id="@+id/nav_feed"
-        android:icon="@android:drawable/ic_menu_gallery"
-        android:title="@string/tab_feed"/>
-
-    <item
-        android:id="@+id/nav_radar"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="@string/tab_radar"/>
-
-    <item
-        android:id="@+id/nav_browser"
-        android:icon="@android:drawable/ic_menu_search"
-        android:title="@string/tab_browser"/>
+        android:title="Mesajlar"/>
 
     <item
         android:id="@+id/nav_wallet"
         android:icon="@android:drawable/ic_menu_agenda"
-        android:title="@string/tab_wallet"/>
+        android:title="Cüzdan"/>
 
     <item
         android:id="@+id/nav_settings"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="@string/tab_settings"/>
+        android:title="Ayarlar"/>
 
 </menu>
