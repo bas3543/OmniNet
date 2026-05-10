@@ -1,55 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#0D1117">
 
     <LinearLayout
-        android:id="@+id/status_strip"
         android:layout_width="match_parent"
-        android:layout_height="28dp"
-        android:background="#161B22"
-        android:orientation="horizontal"
-        android:paddingLeft="14dp"
-        android:paddingRight="14dp"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_mesh_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="OmniNet"
-            android:textColor="#6E7681"
-            android:textSize="10sp"/>
+        <LinearLayout
+            android:id="@+id/status_strip"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:background="#161B22"
+            android:orientation="horizontal"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tv_balance_pill"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/tv_mesh_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="OmniNet"
+                android:textColor="#6E7681"
+                android:textSize="10sp"/>
+
+            <TextView
+                android:id="@+id/tv_balance_pill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00 OC"
+                android:textColor="#2EA043"
+                android:textSize="10sp"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0.00 OC"
-            android:textColor="#2EA043"
-            android:textSize="10sp"/>
+            android:background="#161B22"
+            app:itemIconTint="@color/nav_selector"
+            app:itemTextColor="@color/nav_selector"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav"/>
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav"
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_main"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#161B22"
-        app:itemIconTint="@color/nav_selector"
-        app:itemTextColor="@color/nav_selector"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav"/>
+        android:layout_gravity="bottom|end"
+        android:layout_margin="72dp"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="#238636"
+        app:tint="@android:color/white"/>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
