@@ -7,7 +7,6 @@
     android:orientation="vertical"
     android:background="#0D1117">
 
-    <!-- Mesh durum çubuğu -->
     <LinearLayout
         android:id="@+id/status_strip"
         android:layout_width="match_parent"
@@ -23,7 +22,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="⬡ Ağ aranıyor..."
+            android:text="OmniNet"
             android:textColor="#6E7681"
             android:textSize="10sp"/>
 
@@ -31,20 +30,18 @@
             android:id="@+id/tv_balance_pill"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⛏ 0.00 OC"
+            android:text="0.00 OC"
             android:textColor="#2EA043"
             android:textSize="10sp"/>
 
     </LinearLayout>
 
-    <!-- Fragment alanı -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <!-- Alt navigasyon -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
