@@ -2,32 +2,34 @@ package com.omninet.ui;
 
 import android.content.*;
 import android.os.*;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.omninet.R;
 import com.omninet.services.EconomyService;
 import com.omninet.ui.chat.ChatsFragment;
+import com.omninet.ui.wallet.WalletFragment;
+import com.omninet.ui.settings.SettingsFragment;
 import com.omninet.ui.feed.FeedFragment;
 import com.omninet.ui.radar.RadarFragment;
 import com.omninet.ui.browser.BrowserFragment;
-import com.omninet.ui.wallet.WalletFragment;
-import com.omninet.ui.settings.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private EconomyService economyService;
-    private boolean        economyBound = false;
-    private TextView       tvMeshStatus;
-    private TextView       tvBalancePill;
-    private Handler        handler = new Handler(Looper.getMainLooper());
+    private boolean economyBound = false;
+    private TextView tvMeshStatus;
+    private TextView tvBalancePill;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     private final ServiceConnection economyConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             economyService = ((EconomyService.EconomyBinder) service).getService();
-            economyBound   = true;
+            economyBound = true;
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -37,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
     private final Runnable updateRunner = new Runnable() {
         @Override public void run() {
-            updateStatusBar();
+            if (economyBound && tvBalancePill != null) {
+                tvBalancePill.setText(String.format("%.2f OC", economyService.getBalance()));
+            }
             handler.postDelayed(this, 2000);
         }
     };
@@ -50,20 +54,17 @@ public class MainActivity extends AppCompatActivity {
         tvMeshStatus  = findViewById(R.id.tv_mesh_status);
         tvBalancePill = findViewById(R.id.tv_balance_pill);
 
+        // Bottom nav — 3 sekme
         BottomNavigationView nav = findViewById(R.id.bottom_nav);
         nav.setOnItemSelectedListener(item -> {
             Fragment f = null;
             int id = item.getItemId();
-            if (id == R.id.nav_chats)    f = new ChatsFragment();
-            else if (id == R.id.nav_feed)     f = new FeedFragment();
-            else if (id == R.id.nav_radar)    f = new RadarFragment();
-            else if (id == R.id.nav_browser)  f = new BrowserFragment();
+            if      (id == R.id.nav_chats)    f = new ChatsFragment();
             else if (id == R.id.nav_wallet)   f = new WalletFragment();
             else if (id == R.id.nav_settings) f = new SettingsFragment();
             if (f == null) return false;
             getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, f)
-                .commit();
+                .replace(R.id.fragment_container, f).commit();
             return true;
         });
 
@@ -71,18 +72,46 @@ public class MainActivity extends AppCompatActivity {
             nav.setSelectedItemId(R.id.nav_chats);
         }
 
+        // + FAB — diğer tüm özellikler
+        FloatingActionButton fab = findViewById(R.id.fab_main);
+        fab.setOnClickListener(v -> showPlusMenu());
+
+        // Economy service
         Intent econIntent = new Intent(this, EconomyService.class);
         bindService(econIntent, economyConn, BIND_AUTO_CREATE);
 
-        registerReceiver(meshReceiver,
-            new IntentFilter("com.omninet.MESH_STATUS"));
+        // Mesh durumu
+        registerReceiver(meshReceiver, new IntentFilter("com.omninet.MESH_STATUS"));
     }
 
-    private void updateStatusBar() {
-        if (economyBound && tvBalancePill != null) {
-            tvBalancePill.setText(String.format(
-                "⛏ %.2f OC", economyService.getBalance()));
-        }
+    private void showPlusMenu() {
+        String[] items = {
+            "📡  Feed (Mesh Sosyal)",
+            "🎯  Radar (Ağ Haritası)",
+            "🌐  Tarayıcı",
+            "📞  Sesli Görüşme",
+            "📹  Görüntülü Görüşme",
+            "📁  Dosya Gönder",
+            "🔑  NFC Kimlik Doğrula",
+            "📊  Ağ İstatistikleri"
+        };
+
+        new android.app.AlertDialog.Builder(this)
+            .setTitle("OmniNet Özellikler")
+            .setItems(items, (dialog, which) -> {
+                Fragment f = null;
+                switch (which) {
+                    case 0: f = new FeedFragment();    break;
+                    case 1: f = new RadarFragment();   break;
+                    case 2: f = new BrowserFragment(); break;
+                    default:
+                        Toast.makeText(this, items[which] + " yakında!", Toast.LENGTH_SHORT).show();
+                        return;
+                }
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, f).commit();
+            })
+            .show();
     }
 
     private final BroadcastReceiver meshReceiver = new BroadcastReceiver() {
@@ -92,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             boolean internet = intent.getBooleanExtra("has_internet", false);
             if (tvMeshStatus != null) {
                 tvMeshStatus.setText("⬡ " + nodes + " düğüm" +
-                    (internet ? " · 🌐 İnternet" : ""));
+                    (internet ? " · 🌐" : ""));
             }
         }
     };
