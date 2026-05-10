@@ -133,3 +133,7 @@ public class CallFragment extends Fragment {
         // Hoparlör
         Button btnSpeaker = buildCircleBtn("🔈", 0xFF21262D);
         btnSpeaker.setOnClickListener(v -> {
+            // Buradaki kodların...
+        }); // Dinleyiciyi kapat
+    } // Metodu kapat
+} // Class'ı kapat
