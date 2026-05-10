@@ -141,3 +141,6 @@ public class NumberManager {
     }
 
     public static void clear() {
+        cachedNumber = null;
+    }
+}
