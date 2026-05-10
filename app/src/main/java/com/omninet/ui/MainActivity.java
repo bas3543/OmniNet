@@ -2,12 +2,10 @@ package com.omninet.ui;
 
 import android.content.*;
 import android.os.*;
-import android.view.*;
-import android.widget.*;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.omninet.R;
 import com.omninet.services.EconomyService;
 import com.omninet.ui.chat.ChatsFragment;
@@ -40,9 +38,22 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable updateRunner = new Runnable() {
         @Override public void run() {
             if (economyBound && tvBalancePill != null) {
-                tvBalancePill.setText(String.format("%.2f OC", economyService.getBalance()));
+                tvBalancePill.setText(String.format("%.2f OC",
+                    economyService.getBalance()));
             }
             handler.postDelayed(this, 2000);
+        }
+    };
+
+    private final BroadcastReceiver meshReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context ctx, Intent intent) {
+            int nodes = intent.getIntExtra("node_count", 0);
+            boolean internet = intent.getBooleanExtra("has_internet", false);
+            if (tvMeshStatus != null) {
+                tvMeshStatus.setText("⬡ " + nodes + " düğüm" +
+                    (internet ? " · 🌐" : ""));
+            }
         }
     };
 
@@ -54,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         tvMeshStatus  = findViewById(R.id.tv_mesh_status);
         tvBalancePill = findViewById(R.id.tv_balance_pill);
 
-        // Bottom nav — 3 sekme
         BottomNavigationView nav = findViewById(R.id.bottom_nav);
         nav.setOnItemSelectedListener(item -> {
             Fragment f = null;
@@ -72,16 +82,22 @@ public class MainActivity extends AppCompatActivity {
             nav.setSelectedItemId(R.id.nav_chats);
         }
 
-        // + FAB — diğer tüm özellikler
-        FloatingActionButton fab = findViewById(R.id.fab_main);
-        fab.setOnClickListener(v -> showPlusMenu());
+        // FAB — + butonu
+        findViewById(R.id.fab_main).setOnClickListener(v -> showPlusMenu());
 
         // Economy service
         Intent econIntent = new Intent(this, EconomyService.class);
         bindService(econIntent, economyConn, BIND_AUTO_CREATE);
 
-        // Mesh durumu
-        registerReceiver(meshReceiver, new IntentFilter("com.omninet.MESH_STATUS"));
+        // Android 13+ için RECEIVER_NOT_EXPORTED flag gerekli
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(meshReceiver,
+                new IntentFilter("com.omninet.MESH_STATUS"),
+                Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(meshReceiver,
+                new IntentFilter("com.omninet.MESH_STATUS"));
+        }
     }
 
     private void showPlusMenu() {
@@ -105,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
                     case 1: f = new RadarFragment();   break;
                     case 2: f = new BrowserFragment(); break;
                     default:
-                        Toast.makeText(this, items[which] + " yakında!", Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(this,
+                            "Yakında!", android.widget.Toast.LENGTH_SHORT).show();
                         return;
                 }
                 getSupportFragmentManager().beginTransaction()
@@ -113,18 +130,6 @@ public class MainActivity extends AppCompatActivity {
             })
             .show();
     }
-
-    private final BroadcastReceiver meshReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context ctx, Intent intent) {
-            int nodes = intent.getIntExtra("node_count", 0);
-            boolean internet = intent.getBooleanExtra("has_internet", false);
-            if (tvMeshStatus != null) {
-                tvMeshStatus.setText("⬡ " + nodes + " düğüm" +
-                    (internet ? " · 🌐" : ""));
-            }
-        }
-    };
 
     @Override
     protected void onStart() {
