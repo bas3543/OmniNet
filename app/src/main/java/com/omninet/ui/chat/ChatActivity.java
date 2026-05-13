@@ -218,4 +218,141 @@ public class ChatActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(msgReceiver,
                 new IntentFilter("com.omninet.MESSAGE"),
-                Context.RECEIVER_NO
+                Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(msgReceiver,
+                new IntentFilter("com.omninet.MESSAGE"));
+        }
+
+        // Okundu işaretle
+        Executors.newSingleThreadExecutor().execute(() ->
+            OmniDatabase.get(this).messageDao()
+                .markAllRead(contact.omniNumber));
+    }
+
+    private void loadMessages() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Message> messages = OmniDatabase.get(this)
+                .messageDao().getThreadSync(contact.omniNumber);
+
+            handler.post(() -> {
+                msgList.removeAllViews();
+                if (messages.isEmpty()) {
+                    TextView empty = new TextView(this);
+                    empty.setText("Henüz mesaj yok.\nMesaj göndererek başla!");
+                    empty.setTextColor(0xFF6E7681);
+                    empty.setTextSize(13);
+                    empty.setGravity(android.view.Gravity.CENTER);
+                    empty.setPadding(0, 60, 0, 0);
+                    msgList.addView(empty);
+                } else {
+                    for (Message msg : messages) {
+                        msgList.addView(buildMsgBubble(msg));
+                    }
+                }
+                // En alta kaydır
+                scrollView.post(() ->
+                    scrollView.fullScroll(View.FOCUS_DOWN));
+            });
+        });
+    }
+
+    private View buildMsgBubble(Message msg) {
+        boolean isOut = msg.isOutgoing(myNumber);
+
+        LinearLayout wrapper = new LinearLayout(this);
+        wrapper.setOrientation(LinearLayout.VERTICAL);
+        wrapper.setGravity(isOut ?
+            android.view.Gravity.END : android.view.Gravity.START);
+        LinearLayout.LayoutParams wP = new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+        wP.setMargins(0, 4, 0, 4);
+        wrapper.setLayoutParams(wP);
+
+        TextView bubble = new TextView(this);
+        bubble.setText(msg.clearText);
+        bubble.setTextColor(isOut ? 0xFFAFF5C3 : 0xFFC9D1D9);
+        bubble.setTextSize(13);
+        bubble.setPadding(28, 20, 28, 20);
+        bubble.setLineSpacing(4, 1);
+
+        android.graphics.drawable.GradientDrawable bubbleBg =
+            new android.graphics.drawable.GradientDrawable();
+        bubbleBg.setColor(isOut ? 0xFF1A4731 : 0xFF21262D);
+        if (isOut) {
+            bubbleBg.setCornerRadii(new float[]{
+                28, 28, 28, 28, 28, 28, 4, 4});
+        } else {
+            bubbleBg.setCornerRadii(new float[]{
+                28, 28, 28, 28, 4, 4, 28, 28});
+        }
+        bubble.setBackground(bubbleBg);
+
+        LinearLayout.LayoutParams bP = new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+        bP.setMargins(isOut ? 120 : 0, 0, isOut ? 0 : 120, 0);
+        bubble.setLayoutParams(bP);
+        wrapper.addView(bubble);
+
+        // Zaman + durum
+        TextView tvMeta = new TextView(this);
+        tvMeta.setText(msg.getTimeString() +
+            (isOut ? "  " + msg.getStatusIcon() : ""));
+        tvMeta.setTextColor(0xFF6E7681);
+        tvMeta.setTextSize(10);
+        LinearLayout.LayoutParams metaP = new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+        metaP.setMargins(isOut ? 0 : 8, 4, isOut ? 8 : 0, 0);
+        tvMeta.setLayoutParams(metaP);
+        wrapper.addView(tvMeta);
+
+        return wrapper;
+    }
+
+    private void sendMessage() {
+        String text = etMessage.getText().toString().trim();
+        if (text.isEmpty()) return;
+
+        Message msg = Message.createText(myNumber,
+            contact.omniNumber, text);
+
+        etMessage.setText("");
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            OmniDatabase.get(this).messageDao().insert(msg);
+
+            // Mesh üzerinden gönder
+            Intent intent = new Intent(this,
+                com.omninet.services.OmniBackgroundService.class);
+            intent.setAction(
+                com.omninet.services.OmniBackgroundService
+                    .ACTION_SEND_MESSAGE);
+            intent.putExtra("target", contact.omniNumber);
+            intent.putExtra("payload", text.getBytes());
+            intent.putExtra("type", (byte) 0x01);
+            startService(intent);
+
+            // Gönderildi işaretle
+            handler.postDelayed(() -> {
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    OmniDatabase.get(this).messageDao()
+                        .markSent(msg.msgId);
+                    loadMessages();
+                });
+            }, 500);
+        });
+
+        loadMessages();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            unregisterReceiver(msgReceiver);
+        } catch (Exception ignored) {}
+    }
+}
