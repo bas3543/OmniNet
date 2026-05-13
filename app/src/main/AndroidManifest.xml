@@ -52,7 +52,11 @@
             android:name=".services.OmniBackgroundService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice"/>
-
+<activity
+            android:name=".ui.chat.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"/>
         <service
             android:name=".services.EconomyService"
             android:exported="false"/>
