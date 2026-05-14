@@ -28,7 +28,10 @@
     <uses-feature android:name="android.hardware.wifi.direct" android:required="false"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.nfc" android:required="false"/>
-
+<activity
+            android:name=".ui.chat.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
     <application
         android:name=".core.OmniApp"
         android:label="OmniNet"
