@@ -28,14 +28,11 @@
     <uses-feature android:name="android.hardware.wifi.direct" android:required="false"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.nfc" android:required="false"/>
-<activity
-            android:name=".ui.chat.ChatActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+
     <application
         android:name=".core.OmniApp"
         android:label="OmniNet"
-        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+        android:theme="@style/Theme.OmniNet"
         android:hardwareAccelerated="true"
         android:allowBackup="false"
         android:supportsRtl="true">
@@ -51,15 +48,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.chat.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+
         <service
             android:name=".services.OmniBackgroundService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice"/>
-<activity
-            android:name=".ui.chat.ChatActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"/>
+
         <service
             android:name=".services.EconomyService"
             android:exported="false"/>
