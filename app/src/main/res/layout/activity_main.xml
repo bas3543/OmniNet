@@ -4,21 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D1117">
+    android:background="#0D1117"
+    android:fitsSystemWindows="true">
 
+    <!-- Ana içerik alanı -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- Durum şeridi -->
         <LinearLayout
             android:id="@+id/status_strip"
             android:layout_width="match_parent"
-            android:layout_height="28dp"
+            android:layout_height="36dp"
             android:background="#161B22"
             android:orientation="horizontal"
-            android:paddingLeft="14dp"
-            android:paddingRight="14dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:gravity="center_vertical">
 
             <TextView
@@ -26,46 +29,60 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="OmniNet"
+                android:text="⬡ Ağ aranıyor..."
                 android:textColor="#6E7681"
-                android:textSize="10sp"/>
+                android:textSize="11sp"
+                android:fontFamily="monospace"/>
 
             <TextView
                 android:id="@+id/tv_balance_pill"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0.00 OC"
+                android:text="⛏ 0.00 OC"
                 android:textColor="#2EA043"
-                android:textSize="10sp"/>
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_pill_green"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"/>
 
         </LinearLayout>
 
+        <!-- Fragment alanı -->
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_nav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#161B22"
-            app:itemIconTint="@color/nav_selector"
-            app:itemTextColor="@color/nav_selector"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_nav"/>
-
     </LinearLayout>
 
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
+        android:background="#161B22"
+        app:elevation="16dp"
+        app:itemIconTint="@color/nav_selector"
+        app:itemTextColor="@color/nav_selector"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav"/>
+
+    <!-- FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="72dp"
+        android:layout_margin="80dp"
         android:src="@android:drawable/ic_input_add"
+        android:contentDescription="Özellikler"
         app:backgroundTint="#238636"
-        app:tint="@android:color/white"/>
+        app:tint="@android:color/white"
+        app:elevation="8dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
