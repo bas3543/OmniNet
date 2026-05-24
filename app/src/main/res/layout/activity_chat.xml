@@ -138,7 +138,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Şifreli mesaj yaz..."
-            android:hintTextColor="#484F58"
             android:textColor="#C9D1D9"
             android:textSize="14sp"
             android:paddingStart="16dp"
