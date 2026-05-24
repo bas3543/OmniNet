@@ -58,7 +58,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Kişi veya numara ara..."
-        android:hintTextColor="#484F58"
         android:textColor="#C9D1D9"
         android:textSize="13sp"
         android:paddingStart="16dp"
