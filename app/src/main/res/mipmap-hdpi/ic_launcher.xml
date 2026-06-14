@@ -12,37 +12,53 @@
 
     <!-- Dış daire -->
     <path
+        android:fillColor="#00000000"
         android:strokeColor="#1F6FEB"
         android:strokeWidth="3"
-        android:fillColor="#00000000"
-        android:pathData="M54,18 A36,36 0 1,1 53.99,18"/>
+        android:pathData="M54,15 C72.78,15 88,30.22 88,49 C88,67.78 72.78,83 54,83 C35.22,83 20,67.78 20,49 C20,30.22 35.22,15 54,15 Z"/>
 
-    <!-- O harfi -->
+    <!-- O harfi iç daire -->
     <path
+        android:fillColor="#00000000"
         android:strokeColor="#1F6FEB"
         android:strokeWidth="5"
+        android:pathData="M54,36 C62.28,36 69,42.72 69,51 C69,59.28 62.28,66 54,66 C45.72,66 39,59.28 39,51 C39,42.72 45.72,36 54,36 Z"/>
+
+    <!-- Hexagon bağlantılar -->
+    <path
         android:fillColor="#00000000"
-        android:pathData="M40,54 A14,14 0 1,1 39.99,54"/>
+        android:strokeColor="#1F6FEB"
+        android:strokeWidth="1.5"
+        android:pathData="M54,18 L80,33 L80,63 L54,78 L28,63 L28,33 Z"/>
 
     <!-- Mesh noktaları -->
-    <circle android:fillColor="#2EA043" android:cx="54" android:cy="22" android:r="3"/>
-    <circle android:fillColor="#2EA043" android:cx="82" android:cy="38" android:r="3"/>
-    <circle android:fillColor="#2EA043" android:cx="82" android:cy="70" android:r="3"/>
-    <circle android:fillColor="#2EA043" android:cx="54" android:cy="86" android:r="3"/>
-    <circle android:fillColor="#2EA043" android:cx="26" android:cy="70" android:r="3"/>
-    <circle android:fillColor="#2EA043" android:cx="26" android:cy="38" android:r="3"/>
-
-    <!-- Mesh bağlantıları -->
-    <path android:strokeColor="#1F6FEB44" android:strokeWidth="1.5"
-        android:pathData="M54,22 L82,38 L82,70 L54,86 L26,70 L26,38 Z"/>
+    <path android:fillColor="#2EA043"
+        android:pathData="M54,14 C56.2,14 58,15.8 58,18 C58,20.2 56.2,22 54,22 C51.8,22 50,20.2 50,18 C50,15.8 51.8,14 54,14 Z"/>
+    <path android:fillColor="#2EA043"
+        android:pathData="M80,29 C82.2,29 84,30.8 84,33 C84,35.2 82.2,37 80,37 C77.8,37 76,35.2 76,33 C76,30.8 77.8,29 80,29 Z"/>
+    <path android:fillColor="#2EA043"
+        android:pathData="M80,59 C82.2,59 84,60.8 84,63 C84,65.2 82.2,67 80,67 C77.8,67 76,65.2 76,63 C76,60.8 77.8,59 80,59 Z"/>
+    <path android:fillColor="#2EA043"
+        android:pathData="M54,74 C56.2,74 58,75.8 58,78 C58,80.2 56.2,82 54,82 C51.8,82 50,80.2 50,78 C50,75.8 51.8,74 54,74 Z"/>
+    <path android:fillColor="#2EA043"
+        android:pathData="M28,29 C30.2,29 32,30.8 32,33 C32,35.2 30.2,37 28,37 C25.8,37 24,35.2 24,33 C24,30.8 25.8,29 28,29 Z"/>
+    <path android:fillColor="#2EA043"
+        android:pathData="M28,59 C30.2,59 32,60.8 32,63 C32,65.2 30.2,67 28,67 C25.8,67 24,65.2 24,63 C24,60.8 25.8,59 28,59 Z"/>
 
     <!-- Merkez nokta -->
-    <circle android:fillColor="#1F6FEB" android:cx="54" android:cy="54" android:r="4"/>
+    <path android:fillColor="#1F6FEB"
+        android:pathData="M54,46 C56.8,46 59,48.2 59,51 C59,53.8 56.8,56 54,56 C51.2,56 49,53.8 49,51 C49,48.2 51.2,46 54,46 Z"/>
 
-    <!-- Sinyal çizgileri -->
-    <path android:strokeColor="#2EA043" android:strokeWidth="2"
-        android:pathData="M68,30 Q75,20 80,25"/>
-    <path android:strokeColor="#2EA043" android:strokeWidth="1.5"
-        android:pathData="M72,34 Q80,22 87,28"/>
+    <!-- Sinyal dalgaları -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#2EA043"
+        android:strokeWidth="2.5"
+        android:pathData="M68,28 Q76,20 82,26"/>
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#2EA043"
+        android:strokeWidth="2"
+        android:pathData="M72,32 Q82,22 90,30"/>
 
 </vector>
