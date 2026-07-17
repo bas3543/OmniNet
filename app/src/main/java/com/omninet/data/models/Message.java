@@ -1,83 +1,48 @@
 package com.omninet.data.models;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+import java.io.Serializable;
 
-@Entity(tableName = "messages")
-public class Message {
-
-    @PrimaryKey
-    @NonNull
-    public String msgId;
-
-    public String threadId;      // Karşı tarafın omniNumber'ı
-    public String fromNumber;    // Gönderenin +777 numarası
-    public String toNumber;      // Alıcının +777 numarası
-    public String clearText;     // Mesaj içeriği
-    public byte[] encrypted;     // Şifreli ham veri
-    public String mediaPath;     // Dosya yolu (varsa)
-    public String mediaType;     // "image","audio","video","file"
-    public long timestamp;       // Gönderilme zamanı
-    public boolean sent;         // Gönderildi mi
-    public boolean delivered;    // Teslim edildi mi
-    public boolean read;         // Okundu mu
-    public int hopCount;         // Kaç cihazdan geçti
-    public String type;          // "text","voice","image","file"
-
-    public static final String TYPE_TEXT  = "text";
-    public static final String TYPE_VOICE = "voice";
-    public static final String TYPE_IMAGE = "image";
-    public static final String TYPE_FILE  = "file";
+@Entity(tableName = "messages",
+        foreignKeys = {
+                @ForeignKey(entity = Chat.class,
+                        parentColumns = "id",
+                        childColumns = "chatId",
+                        onDelete = ForeignKey.CASCADE)
+        })
+public class Message implements Serializable {
+    @PrimaryKey(autoGenerate = true)
+    public int id;
+    public int chatId;
+    public String senderId;
+    public String senderName;
+    public String messageText;
+    public String mediaUrl;
+    public String mediaType;
+    public long timestamp;
+    public boolean isRead;
+    public String status;
+    public String replyToMessageId;
 
     public Message() {
+        this.timestamp = System.currentTimeMillis();
+        this.isRead = false;
+        this.status = "sent";
     }
 
-    public static Message createText(String from, String to, String text) {
-        Message m = new Message();
-
-        m.msgId = java.util.UUID.randomUUID().toString();
-        m.threadId = to;
-        m.fromNumber = from;
-        m.toNumber = to;
-        m.clearText = text;
-        m.timestamp = System.currentTimeMillis();
-        m.type = TYPE_TEXT;
-        m.sent = false;
-        m.delivered = false;
-        m.read = false;
-        m.hopCount = 0;
-
-        return m;
+    public Message(int chatId, String senderId, String senderName, String messageText) {
+        this();
+        this.chatId = chatId;
+        this.senderId = senderId;
+        this.senderName = senderName;
+        this.messageText = messageText;
+        this.mediaType = "text";
     }
 
-    public boolean isOutgoing(String myNumber) {
-        return fromNumber != null && fromNumber.equals(myNumber);
-    }
-
-    public String getTimeString() {
-        java.text.SimpleDateFormat sdf =
-            new java.text.SimpleDateFormat(
-                "HH:mm",
-                java.util.Locale.getDefault()
-            );
-
+    public String getTimeFormatted() {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
         return sdf.format(new java.util.Date(timestamp));
-    }
-
-    public String getStatusIcon() {
-        if (!sent) {
-            return "🕐";
-        }
-
-        if (!delivered) {
-            return "✓";
-        }
-
-        if (!read) {
-            return "✓✓";
-        }
-
-        return "✓✓";
     }
 }
