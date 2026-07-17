@@ -1,48 +1,42 @@
 package com.omninet.data.db;
 
-import androidx.lifecycle.LiveData;
-import androidx.room.*;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Update;
 import com.omninet.data.models.Message;
 import java.util.List;
 
 @Dao
 public interface MessageDao {
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(Message message);
+    @Insert
+    long insert(Message message);
 
     @Update
     void update(Message message);
 
-    @Query("SELECT * FROM messages WHERE threadId = :number " +
-           "OR fromNumber = :number ORDER BY timestamp ASC")
-    LiveData<List<Message>> getThread(String number);
+    @Delete
+    void delete(Message message);
 
-    @Query("SELECT * FROM messages WHERE threadId = :number " +
-           "OR fromNumber = :number ORDER BY timestamp ASC")
-    List<Message> getThreadSync(String number);
+    @Query("SELECT * FROM messages WHERE chatId = :chatId ORDER BY timestamp ASC")
+    List<Message> getMessagesByChat(int chatId);
 
-    @Query("SELECT * FROM messages WHERE msgId = :id LIMIT 1")
-    Message getById(String id);
+    @Query("SELECT * FROM messages WHERE id = :id")
+    Message getMessageById(int id);
 
-    @Query("SELECT * FROM messages WHERE sent = 0")
-    List<Message> getPending();
+    @Query("SELECT * FROM messages WHERE chatId = :chatId ORDER BY timestamp DESC LIMIT 1")
+    Message getLastMessage(int chatId);
 
-    @Query("UPDATE messages SET sent = 1 WHERE msgId = :id")
-    void markSent(String id);
+    @Query("SELECT COUNT(*) FROM messages WHERE chatId = :chatId AND isRead = 0")
+    int getUnreadCount(int chatId);
 
-    @Query("UPDATE messages SET delivered = 1 WHERE msgId = :id")
-    void markDelivered(String id);
+    @Query("UPDATE messages SET isRead = 1 WHERE chatId = :chatId")
+    void markChatAsRead(int chatId);
 
-    @Query("UPDATE messages SET read = 1 WHERE threadId = :number")
-    void markAllRead(String number);
+    @Query("SELECT * FROM messages WHERE chatId = :chatId AND messageText LIKE '%' || :query || '%' ORDER BY timestamp DESC")
+    List<Message> searchMessages(int chatId, String query);
 
-    @Query("SELECT COUNT(*) FROM messages WHERE threadId = :number AND read = 0 AND fromNumber != :myNumber")
-    int getUnreadCount(String number, String myNumber);
-
-    @Query("SELECT * FROM messages GROUP BY threadId ORDER BY timestamp DESC")
-    LiveData<List<Message>> getLatestPerThread();
-
-    @Query("DELETE FROM messages WHERE threadId = :number")
-    void deleteThread(String number);
+    @Query("DELETE FROM messages WHERE chatId = :chatId")
+    void deleteMessagesByChat(int chatId);
 }
