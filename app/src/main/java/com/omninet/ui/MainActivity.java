@@ -1,172 +1,106 @@
 package com.omninet.ui;
 
-import android.content.*;
-import android.os.*;
-import android.widget.TextView;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.*;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.omninet.R;
-import com.omninet.services.EconomyService;
 import com.omninet.ui.chat.ChatsFragment;
-import com.omninet.ui.wallet.WalletFragment;
-import com.omninet.ui.settings.SettingsFragment;
-import com.omninet.ui.feed.FeedFragment;
-import com.omninet.ui.radar.RadarFragment;
-import com.omninet.ui.browser.BrowserFragment;
-import com.omninet.ui.call.CallFragment;
-import com.omninet.ui.file.FileFragment;
+import com.omninet.ui.contacts.ContactsFragment;
+import com.omninet.ui.feed.StatusFragment;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private EconomyService economyService;
-    private boolean economyBound = false;
-    private TextView tvMeshStatus;
-    private TextView tvBalancePill;
-    private Handler handler = new Handler(Looper.getMainLooper());
-
-    private final ServiceConnection economyConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            economyService = ((EconomyService.EconomyBinder) service).getService();
-            economyBound = true;
-        }
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            economyBound = false;
-        }
-    };
-
-    private final Runnable updateRunner = new Runnable() {
-        @Override public void run() {
-            if (economyBound && tvBalancePill != null) {
-                tvBalancePill.setText(String.format("%.2f OC",
-                    economyService.getBalance()));
-            }
-            handler.postDelayed(this, 2000);
-        }
-    };
-
-    private final BroadcastReceiver meshReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context ctx, Intent intent) {
-            int nodes = intent.getIntExtra("node_count", 0);
-            boolean internet = intent.getBooleanExtra("has_internet", false);
-            if (tvMeshStatus != null) {
-                tvMeshStatus.setText("⬡ " + nodes + " düğüm" +
-                    (internet ? " · 🌐" : ""));
-            }
-        }
-    };
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    private BottomNavigationView bottomNav;
+    private List<Fragment> fragmentList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("OmniNet");
 
-        tvMeshStatus  = findViewById(R.id.tv_mesh_status);
-        tvBalancePill = findViewById(R.id.tv_balance_pill);
+        viewPager = findViewById(R.id.viewPager);
+        tabLayout = findViewById(R.id.tabLayout);
+        bottomNav = findViewById(R.id.bottomNav);
 
-        BottomNavigationView nav = findViewById(R.id.bottom_nav);
-        nav.setOnItemSelectedListener(item -> {
-            Fragment f = null;
-            int id = item.getItemId();
-            if      (id == R.id.nav_chats)    f = new ChatsFragment();
-            else if (id == R.id.nav_wallet)   f = new WalletFragment();
-            else if (id == R.id.nav_settings) f = new SettingsFragment();
-            if (f == null) return false;
-            getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, f).commit();
-            return true;
+        setupFragments();
+        setupViewPager();
+        setupBottomNavigation();
+    }
+
+    private void setupFragments() {
+        fragmentList.add(new ChatsFragment());
+        fragmentList.add(new StatusFragment());
+        fragmentList.add(new ContactsFragment());
+    }
+
+    private void setupViewPager() {
+        PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), fragmentList);
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.getTabAt(0).setText("Chats");
+        tabLayout.getTabAt(1).setText("Status");
+        tabLayout.getTabAt(2).setText("Contacts");
+    }
+
+    private void setupBottomNavigation() {
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_chat) {
+                viewPager.setCurrentItem(0);
+                return true;
+            } else if (itemId == R.id.nav_status) {
+                viewPager.setCurrentItem(1);
+                return true;
+            } else if (itemId == R.id.nav_contacts) {
+                viewPager.setCurrentItem(2);
+                return true;
+            }
+            return false;
         });
+    }
 
-        if (savedInstanceState == null) {
-            nav.setSelectedItemId(R.id.nav_chats);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private static class PagerAdapter extends FragmentPagerAdapter {
+        private List<Fragment> fragments;
+
+        PagerAdapter(FragmentManager fm, List<Fragment> fragments) {
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+            this.fragments = fragments;
         }
 
-        findViewById(R.id.fab_main).setOnClickListener(v -> showPlusMenu());
-
-        Intent econIntent = new Intent(this, EconomyService.class);
-        bindService(econIntent, economyConn, BIND_AUTO_CREATE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(meshReceiver,
-                new IntentFilter("com.omninet.MESH_STATUS"),
-                Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            registerReceiver(meshReceiver,
-                new IntentFilter("com.omninet.MESH_STATUS"));
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
         }
-    }
 
-    public void openFragment(Fragment f) {
-        getSupportFragmentManager().beginTransaction()
-            .replace(R.id.fragment_container, f)
-            .addToBackStack(null)
-            .commit();
-    }
-
-    private void showPlusMenu() {
-        String[] items = {
-            "📡  Feed (Mesh Sosyal)",
-            "🎯  Radar (Ağ Haritası)",
-            "🌐  Tarayıcı",
-            "📞  Sesli Görüşme",
-            "📹  Görüntülü Görüşme",
-            "📁  Dosya Gönder",
-            "🔑  NFC Kimlik Doğrula",
-            "📊  Ağ İstatistikleri"
-        };
-
-        new android.app.AlertDialog.Builder(this)
-            .setTitle("OmniNet Özellikler")
-            .setItems(items, (dialog, which) -> {
-                switch (which) {
-                    case 0:
-                        openFragment(new FeedFragment());
-                        break;
-                    case 1:
-                        openFragment(new RadarFragment());
-                        break;
-                    case 2:
-                        openFragment(new BrowserFragment());
-                        break;
-                    case 3:
-                        openFragment(CallFragment.newInstance(
-                            "Kerem", "VOICE"));
-                        break;
-                    case 4:
-                        openFragment(CallFragment.newInstance(
-                            "Kerem", "VIDEO"));
-                        break;
-                   case 5:
-                        openFragment(new FileFragment());
-                        break;
-                    default:
-                        android.widget.Toast.makeText(this,
-                            items[which] + " yakında!",
-                            android.widget.Toast.LENGTH_SHORT).show();
-                }
-            })
-            .show();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        handler.post(updateRunner);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        handler.removeCallbacks(updateRunner);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (economyBound) unbindService(economyConn);
-        try { unregisterReceiver(meshReceiver); } catch (Exception ignored) {}
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
     }
 }
